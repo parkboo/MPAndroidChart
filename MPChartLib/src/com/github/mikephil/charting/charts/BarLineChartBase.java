@@ -244,6 +244,8 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         if (mAxisRight.isDrawLimitLinesBehindDataEnabled())
             mAxisRendererRight.renderLimitLines(canvas);
 
+        // line chart의 dot가 bar chart 위에 표시됨 임시 처리.
+        mRenderer.drawExtras(canvas);
         mRenderer.drawData(canvas);
 
         if (!mXAxis.isDrawLimitLinesBehindDataEnabled())
@@ -262,7 +264,6 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         // Removes clipping rectangle
         canvas.restoreToCount(clipRestoreCount);
 
-        mRenderer.drawExtras(canvas);
 
         mXAxisRenderer.renderAxisLabels(canvas);
         mAxisRendererLeft.renderAxisLabels(canvas);
