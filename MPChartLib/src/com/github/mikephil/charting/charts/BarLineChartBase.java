@@ -27,6 +27,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.filter.Approximator;
 import com.github.mikephil.charting.highlight.ChartHighlighter;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.jobs.MoveViewJob;
 import com.github.mikephil.charting.listener.BarLineChartTouchListener;
@@ -34,13 +35,9 @@ import com.github.mikephil.charting.listener.OnDrawListener;
 import com.github.mikephil.charting.renderer.XAxisRenderer;
 import com.github.mikephil.charting.renderer.YAxisRenderer;
 import com.github.mikephil.charting.utils.FillFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.PointD;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base-class of LineChart, BarChart, ScatterChart and CandleStickChart.
@@ -227,6 +224,8 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
         if (mAxisRight.isDrawLimitLinesBehindDataEnabled())
             mAxisRendererRight.renderLimitLines(canvas);
 
+        // parkboo 151012 line chart의 dot가 앞에 그려지는 현상 방지! 밑에서 위로 옮겨옴
+        mRenderer.drawExtras(canvas);
         mRenderer.drawData(canvas);
 
         if (!mXAxis.isDrawLimitLinesBehindDataEnabled())
@@ -245,7 +244,6 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleData<? exte
         // Removes clipping rectangle
         canvas.restoreToCount(clipRestoreCount);
 
-        mRenderer.drawExtras(canvas);
 
         mXAxisRenderer.renderAxisLabels(canvas);
         mAxisRendererLeft.renderAxisLabels(canvas);
