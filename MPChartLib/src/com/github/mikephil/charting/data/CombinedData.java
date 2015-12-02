@@ -17,6 +17,8 @@ public class CombinedData extends BarLineScatterCandleBubbleData<BarLineScatterC
     private ScatterData mScatterData;
     private CandleData mCandleData;
     private BubbleData mBubbleData;
+    private CustomLineData mCustomLineData;
+    private CustomBarData mCustomBarData;
 
     public CombinedData() {
         super();
@@ -60,6 +62,17 @@ public class CombinedData extends BarLineScatterCandleBubbleData<BarLineScatterC
         init();
     }
 
+    public void setData(CustomLineData data) {
+        mCustomLineData = data;
+        mDataSets.addAll(data.getDataSets());
+        init();
+    }
+
+    public void setData(CustomBarData data) {
+        mCustomBarData = data;
+        mDataSets.addAll(data.getDataSets());
+        init();
+    }
     public BubbleData getBubbleData() {
         return mBubbleData;
     }
@@ -78,6 +91,14 @@ public class CombinedData extends BarLineScatterCandleBubbleData<BarLineScatterC
 
     public CandleData getCandleData() {
         return mCandleData;
+    }
+
+    public CustomLineData getCustomLineData() {
+        return mCustomLineData;
+    }
+
+    public CustomBarData getCustomBarData() {
+        return mCustomBarData;
     }
 
     /**

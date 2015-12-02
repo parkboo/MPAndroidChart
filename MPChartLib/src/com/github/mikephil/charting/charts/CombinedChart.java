@@ -9,12 +9,16 @@ import com.github.mikephil.charting.data.BubbleData;
 import com.github.mikephil.charting.data.BubbleDataSet;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.CustomBarData;
+import com.github.mikephil.charting.data.CustomLineData;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.highlight.CombinedHighlighter;
 import com.github.mikephil.charting.interfaces.BarDataProvider;
 import com.github.mikephil.charting.interfaces.BubbleDataProvider;
 import com.github.mikephil.charting.interfaces.CandleDataProvider;
+import com.github.mikephil.charting.interfaces.CustomBarDataProvider;
+import com.github.mikephil.charting.interfaces.CustomLineDataProvider;
 import com.github.mikephil.charting.interfaces.LineDataProvider;
 import com.github.mikephil.charting.interfaces.ScatterDataProvider;
 import com.github.mikephil.charting.renderer.CombinedChartRenderer;
@@ -26,7 +30,7 @@ import com.github.mikephil.charting.renderer.CombinedChartRenderer;
  * @author Philipp Jahoda
  */
 public class CombinedChart extends BarLineChartBase<CombinedData> implements LineDataProvider,
-        BarDataProvider, ScatterDataProvider, CandleDataProvider, BubbleDataProvider {
+        BarDataProvider, ScatterDataProvider, CandleDataProvider, BubbleDataProvider, CustomLineDataProvider, CustomBarDataProvider {
 
     /** flag that enables or disables the highlighting arrow */
     private boolean mDrawHighlightArrow = false;
@@ -44,7 +48,7 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Lin
     private boolean mDrawBarShadow = false;
 
     protected DrawOrder[] mDrawOrder = new DrawOrder[] {
-            DrawOrder.BAR, DrawOrder.BUBBLE, DrawOrder.LINE, DrawOrder.CANDLE, DrawOrder.SCATTER
+            DrawOrder.BAR, DrawOrder.BUBBLE, DrawOrder.LINE, DrawOrder.CANDLE, DrawOrder.SCATTER, DrawOrder.CUSTOM_LINE, DrawOrder.CUSTOM_BAR
     };
 
     /**
@@ -52,7 +56,7 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Lin
      * for the combined-chart are drawn
      */
     public enum DrawOrder {
-        BAR, BUBBLE, LINE, CANDLE, SCATTER
+        BAR, BUBBLE, LINE, CANDLE, SCATTER, CUSTOM_LINE, CUSTOM_BAR
     }
 
     public CombinedChart(Context context) {
@@ -147,6 +151,21 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Lin
             return null;
         return mData.getBubbleData();
     }
+
+    @Override
+    public CustomLineData getCustomLineData() {
+        if (mData == null)
+            return null;
+        return mData.getCustomLineData();
+    }
+
+    @Override
+    public CustomBarData getCustomBarData() {
+        if (mData == null)
+            return null;
+        return mData.getCustomBarData();
+    }
+
 
     @Override
     public boolean isDrawBarShadowEnabled() {

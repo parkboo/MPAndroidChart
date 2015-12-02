@@ -1,8 +1,5 @@
 package com.github.mikephil.charting.renderer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.graphics.Canvas;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
@@ -11,6 +8,9 @@ import com.github.mikephil.charting.charts.CombinedChart.DrawOrder;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.BarLineScatterCandleBubbleDataProvider;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Renderer class that is responsible for rendering multiple different data-types.
@@ -65,6 +65,14 @@ public class CombinedChartRenderer extends DataRenderer {
 				if (chart.getScatterData() != null)
 					mRenderers.add(new ScatterChartRenderer(chart, animator, viewPortHandler));
 				break;
+            case CUSTOM_BAR:
+                if (chart.getCustomBarData() != null)
+                    mRenderers.add(new CustomBarChartRenderer(chart, animator, viewPortHandler));
+                break;
+            case CUSTOM_LINE:
+                if (chart.getCustomLineData() != null)
+                    mRenderers.add(new CustomLineChartRenderer(chart, animator, viewPortHandler));
+                break;
 			}
 		}
 	}

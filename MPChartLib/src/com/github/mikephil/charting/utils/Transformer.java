@@ -7,6 +7,7 @@ import android.graphics.RectF;
 
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.CustomBarData;
 import com.github.mikephil.charting.data.Entry;
 
 import java.util.List;
@@ -207,6 +208,33 @@ public class Transformer {
      */
     public float[] generateTransformedValuesBarChart(List<? extends Entry> entries,
                                                      int dataSet, BarData bd, float phaseY) {
+
+        float[] valuePoints = new float[entries.size() * 2];
+
+        int setCount = bd.getDataSetCount();
+        float space = bd.getGroupSpace();
+
+        for (int j = 0; j < valuePoints.length; j += 2) {
+
+            Entry e = entries.get(j / 2);
+            int i = e.getXIndex();
+
+            // calculate the x-position, depending on datasetcount
+            float x = e.getXIndex() + i * (setCount - 1) + dataSet + space * i
+                    + space / 2f;
+            float y = e.getVal();
+
+            valuePoints[j] = x;
+            valuePoints[j + 1] = y * phaseY;
+        }
+
+        getValueToPixelMatrix().mapPoints(valuePoints);
+
+        return valuePoints;
+    }
+
+    public float[] generateTransformedValuesCustomBarChart(List<? extends Entry> entries,
+                                                     int dataSet, CustomBarData bd, float phaseY) {
 
         float[] valuePoints = new float[entries.size() * 2];
 
