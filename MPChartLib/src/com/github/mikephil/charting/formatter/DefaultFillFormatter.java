@@ -1,8 +1,11 @@
 package com.github.mikephil.charting.formatter;
 
 
+import com.github.mikephil.charting.data.CustomLineData;
+import com.github.mikephil.charting.data.CustomLineDataSet;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.CustomLineDataProvider;
 import com.github.mikephil.charting.interfaces.LineDataProvider;
 
 /**
@@ -20,6 +23,41 @@ public class DefaultFillFormatter implements FillFormatter {
         float chartMinY = dataProvider.getYChartMin();
 
         LineData data = dataProvider.getLineData();
+
+        if (dataSet.getYMax() > 0 && dataSet.getYMin() < 0) {
+            fillMin = 0f;
+        } else {
+
+            if (!dataProvider.getAxis(dataSet.getAxisDependency()).isStartAtZeroEnabled()) {
+
+                float max, min;
+
+                if (data.getYMax() > 0)
+                    max = 0f;
+                else
+                    max = chartMaxY;
+                if (data.getYMin() < 0)
+                    min = 0f;
+                else
+                    min = chartMinY;
+
+                fillMin = dataSet.getYMin() >= 0 ? min : max;
+            } else {
+                fillMin = 0f;
+            }
+        }
+
+        return fillMin;
+    }
+
+    @Override
+    public float getFillLinePosition(CustomLineDataSet dataSet, CustomLineDataProvider dataProvider) {
+
+        float fillMin = 0f;
+        float chartMaxY = dataProvider.getYChartMax();
+        float chartMinY = dataProvider.getYChartMin();
+
+        CustomLineData data = dataProvider.getCustomLineData();
 
         if (dataSet.getYMax() > 0 && dataSet.getYMin() < 0) {
             fillMin = 0f;

@@ -11,11 +11,11 @@ import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.buffer.CircleBuffer;
 import com.github.mikephil.charting.buffer.LineBuffer;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.CustomLineData;
+import com.github.mikephil.charting.data.CustomLineDataSet;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.LineDataProvider;
+import com.github.mikephil.charting.interfaces.CustomLineDataProvider;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
 
-    protected LineDataProvider mChart;
+    protected CustomLineDataProvider mChart;
 
     /**
      * paint for the inner circle of the value indicators
@@ -49,7 +49,7 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
 
     protected CircleBuffer[] mCircleBuffers;
 
-    public CustomLineChartRenderer(LineDataProvider chart, ChartAnimator animator,
+    public CustomLineChartRenderer(CustomLineDataProvider chart, ChartAnimator animator,
                                    ViewPortHandler viewPortHandler) {
         super(animator, viewPortHandler);
         mChart = chart;
@@ -62,12 +62,12 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
     @Override
     public void initBuffers() {
 
-        LineData lineData = mChart.getLineData();
+        CustomLineData lineData = mChart.getCustomLineData();
         mLineBuffers = new LineBuffer[lineData.getDataSetCount()];
         mCircleBuffers = new CircleBuffer[lineData.getDataSetCount()];
 
         for (int i = 0; i < mLineBuffers.length; i++) {
-            LineDataSet set = lineData.getDataSetByIndex(i);
+            CustomLineDataSet set = lineData.getDataSetByIndex(i);
             mLineBuffers[i] = new LineBuffer(set.getEntryCount() * 4 - 4);
             mCircleBuffers[i] = new CircleBuffer(set.getEntryCount() * 2);
         }
@@ -93,9 +93,9 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
 
         mDrawBitmap.eraseColor(Color.TRANSPARENT);
 
-        LineData lineData = mChart.getLineData();
+        CustomLineData lineData = mChart.getCustomLineData();
 
-        for (LineDataSet set : lineData.getDataSets()) {
+        for (CustomLineDataSet set : lineData.getDataSets()) {
 
             if (set.isVisible() && set.getEntryCount() > 0)
                 drawDataSet(c, set);
@@ -104,7 +104,7 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
         c.drawBitmap(mDrawBitmap, 0, 0, mRenderPaint);
     }
 
-    protected void drawDataSet(Canvas c, LineDataSet dataSet) {
+    protected void drawDataSet(Canvas c, CustomLineDataSet dataSet) {
 
         List<Entry> entries = dataSet.getYVals();
 
@@ -134,7 +134,7 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
      * @param dataSet
      * @param entries
      */
-    protected void drawCubic(Canvas c, LineDataSet dataSet, List<Entry> entries) {
+    protected void drawCubic(Canvas c, CustomLineDataSet dataSet, List<Entry> entries) {
 
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
 
@@ -239,7 +239,7 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
         mRenderPaint.setPathEffect(null);
     }
 
-    protected void drawCubicFill(Canvas c, LineDataSet dataSet, Path spline, Transformer trans,
+    protected void drawCubicFill(Canvas c, CustomLineDataSet dataSet, Path spline, Transformer trans,
                                  int from, int to) {
 
         if (to - from <= 1)
@@ -264,9 +264,9 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
      * @param dataSet
      * @param entries
      */
-    protected void drawLinear(Canvas c, LineDataSet dataSet, List<Entry> entries) {
+    protected void drawLinear(Canvas c, CustomLineDataSet dataSet, List<Entry> entries) {
 
-        int dataSetIndex = mChart.getLineData().getIndexOfDataSet(dataSet);
+        int dataSetIndex = mChart.getCustomLineData().getIndexOfDataSet(dataSet);
 
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
 
@@ -343,7 +343,7 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
         }
     }
 
-    protected void drawLinearFill(Canvas c, LineDataSet dataSet, List<Entry> entries, int minx,
+    protected void drawLinearFill(Canvas c, CustomLineDataSet dataSet, List<Entry> entries, int minx,
                                   int maxx,
                                   Transformer trans) {
 
@@ -411,14 +411,14 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
     @Override
     public void drawValues(Canvas c) {
 
-        if (mChart.getLineData().getYValCount() < mChart.getMaxVisibleCount()
+        if (mChart.getCustomLineData().getYValCount() < mChart.getMaxVisibleCount()
                 * mViewPortHandler.getScaleX()) {
 
-            List<LineDataSet> dataSets = mChart.getLineData().getDataSets();
+            List<CustomLineDataSet> dataSets = mChart.getCustomLineData().getDataSets();
 
             for (int i = 0; i < dataSets.size(); i++) {
 
-                LineDataSet dataSet = dataSets.get(i);
+                CustomLineDataSet dataSet = dataSets.get(i);
 
                 if (!dataSet.isDrawValuesEnabled() || dataSet.getEntryCount() == 0)
                     continue;
@@ -479,11 +479,11 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
         float phaseX = mAnimator.getPhaseX();
         float phaseY = mAnimator.getPhaseY();
 
-        List<LineDataSet> dataSets = mChart.getLineData().getDataSets();
+        List<CustomLineDataSet> dataSets = mChart.getCustomLineData().getDataSets();
 
         for (int i = 0; i < dataSets.size(); i++) {
 
-            LineDataSet dataSet = dataSets.get(i);
+            CustomLineDataSet dataSet = dataSets.get(i);
 
             if (!dataSet.isVisible() || !dataSet.isDrawCirclesEnabled())
                 continue;
@@ -545,7 +545,7 @@ public class CustomLineChartRenderer extends LineScatterCandleRadarRenderer {
 
         for (int i = 0; i < indices.length; i++) {
 
-            LineDataSet set = mChart.getLineData().getDataSetByIndex(indices[i]
+            CustomLineDataSet set = mChart.getCustomLineData().getDataSetByIndex(indices[i]
                     .getDataSetIndex());
 
             if (set == null || !set.isHighlightEnabled())
