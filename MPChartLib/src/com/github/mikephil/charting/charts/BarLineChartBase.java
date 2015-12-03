@@ -103,9 +103,9 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
     protected boolean mDrawBorders = false;
 
     /**
-     * Sets the minimum offset (padding) around the chart, defaults to 10
+     * Sets the minimum offset (padding) around the chart, defaults to 15
      */
-    protected float mMinOffset = 10.f;
+    protected float mMinOffset = 15.f;
 
     /**
      * the listener for user drawing on the chart
@@ -490,7 +490,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
             if (mXAxis.isEnabled() && mXAxis.isDrawLabelsEnabled()) {
 
-                float xlabelheight = mXAxis.mLabelHeight * 2f;
+                float xlabelheight = mXAxis.mLabelRotatedHeight + mXAxis.getYOffset();
 
                 // offsets for x-labels
                 if (mXAxis.getPosition() == XAxisPosition.BOTTOM) {
@@ -546,14 +546,16 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
             mViewPortHandler.getMatrixTouch().getValues(values);
 
             mXAxis.mAxisLabelModulus = (int) Math
-                    .ceil((mData.getXValCount() * mXAxis.mLabelWidth)
+                    .ceil((mData.getXValCount() * mXAxis.mLabelRotatedWidth)
                             / (mViewPortHandler.contentWidth() * values[Matrix.MSCALE_X]));
 
         }
 
         if (mLogEnabled)
-            Log.i(LOG_TAG, "X-Axis modulus: " + mXAxis.mAxisLabelModulus + ", x-axis label width: "
-                    + mXAxis.mLabelWidth + ", content width: " + mViewPortHandler.contentWidth());
+            Log.i(LOG_TAG, "X-Axis modulus: " + mXAxis.mAxisLabelModulus +
+                    ", x-axis label width: " + mXAxis.mLabelWidth +
+                    ", x-axis label rotated width: " + mXAxis.mLabelRotatedWidth +
+                    ", content width: " + mViewPortHandler.contentWidth());
 
         if (mXAxis.mAxisLabelModulus < 1)
             mXAxis.mAxisLabelModulus = 1;
@@ -1132,6 +1134,16 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         mBorderPaint.setColor(color);
     }
 
+    /** Gets the minimum offset (padding) around the chart, defaults to 15.f */
+    public float getMinOffset() {
+        return mMinOffset;
+    }
+
+    /** Sets the minimum offset (padding) around the chart, defaults to 15.f */
+    public void setMinOffset(float minOffset) {
+        mMinOffset = minOffset;
+    }
+
     /**
      * Returns the Highlight object (contains x-index and DataSet index) of the
      * selected value at the given touch point inside the Line-, Scatter-, or
@@ -1248,7 +1260,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
                 mViewPortHandler.contentLeft(), mViewPortHandler.contentBottom()
         };
         getTransformer(AxisDependency.LEFT).pixelsToValue(pts);
-        return (pts[0] <= 0) ? 0 : (int) (pts[0] + 1);
+        return (pts[0] <= 0) ? 0 : (int) Math.round(pts[0] + 1.0f);
     }
 
     /**
@@ -1263,7 +1275,9 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
                 mViewPortHandler.contentRight(), mViewPortHandler.contentBottom()
         };
         getTransformer(AxisDependency.LEFT).pixelsToValue(pts);
-        return (pts[0] >= mData.getXValCount()) ? mData.getXValCount() - 1 : (int) pts[0];
+        return (Math.round(pts[0]) >= mData.getXValCount()) ? 
+                mData.getXValCount() - 1 : 
+                (int) Math.round(pts[0]);
     }
 
     /**
