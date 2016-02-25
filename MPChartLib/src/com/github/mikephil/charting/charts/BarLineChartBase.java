@@ -184,107 +184,112 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
     private long totalTime = 0;
     private long drawCycles = 0;
 
+    private Object obj = new Object();
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected synchronized void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
         if (mDataNotSet)
             return;
 
-        long starttime = System.currentTimeMillis();
-        calcModulus();
+        if( mRenderer == null )
+            return;
 
-        mXAxisRenderer.calcXBounds(this, mXAxis.mAxisLabelModulus);
-        mRenderer.calcXBounds(this, mXAxis.mAxisLabelModulus);
+        synchronized (obj) {
+            long starttime = System.currentTimeMillis();
+            calcModulus();
 
-        // execute all drawing commands
-        drawGridBackground(canvas);
+            mXAxisRenderer.calcXBounds(this, mXAxis.mAxisLabelModulus);
+            mRenderer.calcXBounds(this, mXAxis.mAxisLabelModulus);
 
-        if (mAxisLeft.isEnabled())
-            mAxisRendererLeft.computeAxis(mAxisLeft.mAxisMinimum, mAxisLeft.mAxisMaximum);
-        if (mAxisRight.isEnabled())
-            mAxisRendererRight.computeAxis(mAxisRight.mAxisMinimum, mAxisRight.mAxisMaximum);
+            // execute all drawing commands
+            drawGridBackground(canvas);
 
-        mXAxisRenderer.renderAxisLine(canvas);
-        mAxisRendererLeft.renderAxisLine(canvas);
-        mAxisRendererRight.renderAxisLine(canvas);
+            if (mAxisLeft.isEnabled())
+                mAxisRendererLeft.computeAxis(mAxisLeft.mAxisMinimum, mAxisLeft.mAxisMaximum);
+            if (mAxisRight.isEnabled())
+                mAxisRendererRight.computeAxis(mAxisRight.mAxisMinimum, mAxisRight.mAxisMaximum);
 
-        if (mAutoScaleMinMaxEnabled) {
-            final int lowestVisibleXIndex = getLowestVisibleXIndex();
-            final int highestVisibleXIndex = getHighestVisibleXIndex();
+            mXAxisRenderer.renderAxisLine(canvas);
+            mAxisRendererLeft.renderAxisLine(canvas);
+            mAxisRendererRight.renderAxisLine(canvas);
 
-            if (mAutoScaleLastLowestVisibleXIndex == null ||
-                    mAutoScaleLastLowestVisibleXIndex != lowestVisibleXIndex ||
-                    mAutoScaleLastHighestVisibleXIndex == null ||
-                    mAutoScaleLastHighestVisibleXIndex != highestVisibleXIndex) {
+            if (mAutoScaleMinMaxEnabled) {
+                final int lowestVisibleXIndex = getLowestVisibleXIndex();
+                final int highestVisibleXIndex = getHighestVisibleXIndex();
 
-                calcMinMax();
-                calculateOffsets();
+                if (mAutoScaleLastLowestVisibleXIndex == null ||
+                        mAutoScaleLastLowestVisibleXIndex != lowestVisibleXIndex ||
+                        mAutoScaleLastHighestVisibleXIndex == null ||
+                        mAutoScaleLastHighestVisibleXIndex != highestVisibleXIndex) {
 
-                mAutoScaleLastLowestVisibleXIndex = lowestVisibleXIndex;
-                mAutoScaleLastHighestVisibleXIndex = highestVisibleXIndex;
+                    calcMinMax();
+                    calculateOffsets();
+
+                    mAutoScaleLastLowestVisibleXIndex = lowestVisibleXIndex;
+                    mAutoScaleLastHighestVisibleXIndex = highestVisibleXIndex;
+                }
             }
-        }
 
-        // make sure the graph values and grid cannot be drawn outside the
-        // content-rect
-        int clipRestoreCount = canvas.save();
-        canvas.clipRect(mViewPortHandler.getContentRect());
+            // make sure the graph values and grid cannot be drawn outside the
+            // content-rect
+            int clipRestoreCount = canvas.save();
+            canvas.clipRect(mViewPortHandler.getContentRect());
 
-        mXAxisRenderer.renderGridLines(canvas);
-        mAxisRendererLeft.renderGridLines(canvas);
-        mAxisRendererRight.renderGridLines(canvas);
+            mXAxisRenderer.renderGridLines(canvas);
+            mAxisRendererLeft.renderGridLines(canvas);
+            mAxisRendererRight.renderGridLines(canvas);
 
-        if (mXAxis.isDrawLimitLinesBehindDataEnabled())
-            mXAxisRenderer.renderLimitLines(canvas);
+            if (mXAxis.isDrawLimitLinesBehindDataEnabled())
+                mXAxisRenderer.renderLimitLines(canvas);
 
-        if (mAxisLeft.isDrawLimitLinesBehindDataEnabled())
-            mAxisRendererLeft.renderLimitLines(canvas);
+            if (mAxisLeft.isDrawLimitLinesBehindDataEnabled())
+                mAxisRendererLeft.renderLimitLines(canvas);
 
-        if (mAxisRight.isDrawLimitLinesBehindDataEnabled())
-            mAxisRendererRight.renderLimitLines(canvas);
+            if (mAxisRight.isDrawLimitLinesBehindDataEnabled())
+                mAxisRendererRight.renderLimitLines(canvas);
 
-        // line chart의 dot가 bar chart 위에 표시됨 임시 처리.
-        mRenderer.drawExtras(canvas);
-        mRenderer.drawData(canvas);
+            // line chart의 dot가 bar chart 위에 표시됨 임시 처리.
+            mRenderer.drawExtras(canvas);
+            mRenderer.drawData(canvas);
 
-        if (!mXAxis.isDrawLimitLinesBehindDataEnabled())
-            mXAxisRenderer.renderLimitLines(canvas);
+            if (!mXAxis.isDrawLimitLinesBehindDataEnabled())
+                mXAxisRenderer.renderLimitLines(canvas);
 
-        if (!mAxisLeft.isDrawLimitLinesBehindDataEnabled())
-            mAxisRendererLeft.renderLimitLines(canvas);
+            if (!mAxisLeft.isDrawLimitLinesBehindDataEnabled())
+                mAxisRendererLeft.renderLimitLines(canvas);
 
-        if (!mAxisRight.isDrawLimitLinesBehindDataEnabled())
-            mAxisRendererRight.renderLimitLines(canvas);
+            if (!mAxisRight.isDrawLimitLinesBehindDataEnabled())
+                mAxisRendererRight.renderLimitLines(canvas);
 
-        // if highlighting is enabled
-        if (valuesToHighlight())
-            mRenderer.drawHighlighted(canvas, mIndicesToHighlight);
+            // if highlighting is enabled
+            if (valuesToHighlight())
+                mRenderer.drawHighlighted(canvas, mIndicesToHighlight);
 
-        // Removes clipping rectangle
-        canvas.restoreToCount(clipRestoreCount);
+            // Removes clipping rectangle
+            canvas.restoreToCount(clipRestoreCount);
 
 
-        mXAxisRenderer.renderAxisLabels(canvas);
-        mAxisRendererLeft.renderAxisLabels(canvas);
-        mAxisRendererRight.renderAxisLabels(canvas);
+            mXAxisRenderer.renderAxisLabels(canvas);
+            mAxisRendererLeft.renderAxisLabels(canvas);
+            mAxisRendererRight.renderAxisLabels(canvas);
 
-        mRenderer.drawValues(canvas);
+            mRenderer.drawValues(canvas);
 
-        mLegendRenderer.renderLegend(canvas);
+            mLegendRenderer.renderLegend(canvas);
 
-        drawMarkers(canvas);
+            drawMarkers(canvas);
 
-        drawDescription(canvas);
+            drawDescription(canvas);
 
-        if (mLogEnabled) {
-            long drawtime = (System.currentTimeMillis() - starttime);
-            totalTime += drawtime;
-            drawCycles += 1;
-            long average = totalTime / drawCycles;
-            Log.i(LOG_TAG, "Drawtime: " + drawtime + " ms, average: " + average + " ms, cycles: "
-                    + drawCycles);
-        }
+            if (mLogEnabled) {
+                long drawtime = (System.currentTimeMillis() - starttime);
+                totalTime += drawtime;
+                drawCycles += 1;
+                long average = totalTime / drawCycles;
+                Log.i(LOG_TAG, "Drawtime: " + drawtime + " ms, average: " + average + " ms, cycles: "
+                        + drawCycles);
+            }        }
     }
 
     /**
@@ -654,7 +659,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
 
-        if (mChartTouchListener == null || mDataNotSet)
+        if (mChartTouchListener == null /*|| mDataNotSet*/)
             return false;
 
         // check if touch gestures are enabled
