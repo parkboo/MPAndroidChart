@@ -1,15 +1,15 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
+//apply plugin: 'maven'
 //apply plugin: 'com.github.dcendents.android-maven'
 //apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    namespace "com.github.mikephil.charting"
+    compileSdkVersion 34
     // resourcePrefix 'mpcht'
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 25
+        targetSdkVersion 34
         versionCode 3
         versionName '3.0.2'
     }
@@ -29,7 +29,7 @@ android {
 
 repositories {
     maven {
-        url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        url 'https://oss.jfrog.org/artifactory/oss-snapshot-local'
     }
 }
 
@@ -37,8 +37,8 @@ dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
     //compile 'com.android.support:support-v4:19.+'
     //provided 'io.realm:realm-android:0.87.5' // "optional" dependency to realm-database API
-    testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:1.9.5"
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-core:1.9.5"
 }
 
 android.libraryVariants.all { variant ->
